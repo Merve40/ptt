@@ -6,31 +6,13 @@
   </head>
 
   <body>
-    <h1>Choose an action.</h1>
-    <button id="login" type="button" title="Simulate login">
-      Simulate login
-    </button>
-    <button id="logout" type="button" title="Simulate logout">
-      Simulate logout
-    </button>
-    <button id="wsButton" type="button" title="Open WebSocket connection">
-      Open WebSocket connection
-    </button>
-    <button id="channel" type="button" title="Subscribe">
-      Subscribe
-    </button>
-    <button id="send" type="button" title="Send Message">
-      Send Message
-    </button>
-    <button id="rec-play" type="button" title="Record & Play">
-      Record & Play
-    </button>
+    <h1>PTT Demo</h1>
+    <pre id="message"></pre>
+    <input id="btn-record" type="button" value="PUSH TO TALK!"></input>
 
-    <audio controls autoplay></audio>
-
-    <pre id="messages" style="height: 400px; overflow: scroll"></pre>
 
     <script src="bundle.js"></script>
     <script src="api.js"></script>
+    <script src="index.js"></script>
   </body>
 </html>

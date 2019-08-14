@@ -36,6 +36,7 @@ const wss = new websocketServer.Server({
             done(info.req.session.userId);
       });
     },
+    path: '/wss',
     server
   });
 
@@ -60,55 +61,6 @@ app.get('/subscribe', (req, res)=>{
     subscribe(id, channel);
     res.send('OK');
 });
-
-streams = {};
-
-
-app.get('/stream/:channel.ogg', (req, res)=>{
-    var channel = users[req.session.userId];
-    console.log(users);
-    console.log("streaming for channel = "+channel);
-   // var inputStream = fs.createReadStream('./output/'+channel+".ogg", {end:false});
-    //inputStream.pipe(res);
-
-    /*res.set({
-        'Content-Type': 'audio/ogg',
-        'Transfer-Encoding': 'chunked'
-    });*/
-    res.writeHead(200, {
-        'Content-Type': 'audio/ogg',
-        'Transfer-Encoding': 'chunked'
-    });
-    
-    const handleChunk = (chunk) =>{
-        //inputStream.pipe(res);
-        var haswritten = res.write(chunk, ()=>{
-            console.log("chunk was flushed!");            
-        });
-        if(!haswritten){
-            console.log("waiting for chunk to be flushed!");
-            res.once('drain', ()=>{
-                console.log("drained!");
-            });
-        }else{
-            console.log("flushed chunk successfully");
-        }
-
-        /*res.write('\r\n', (err)=>{
-            console.log(err);
-        });*/
-    };
-    streams[channel].event.on('stream', handleChunk);
-
-    streams[channel].event.on('ended', ()=>{
-        //inputStream.close();
-        console.log("ended stream!");
-        //res.send("OK");
-        res.end();
-        streams[channel].event.removeAllListeners();
-    });
-});
-
      
 wss.on('connection', (ws, req) => {
 
@@ -118,25 +70,16 @@ wss.on('connection', (ws, req) => {
     ws.on('message', message => {
 
         var sessionId = req.session.userId;
-        //console.log(message);
+        console.log("message from: "+ sessionId);
         var channel = users[sessionId];
-        /*
-        var fname = "./output/"+channel+".ogg";
-        if (fs.existsSync(fname)) {
-            fs.truncate(fname, 0, () =>{});
-        }*/
 
+        if(!channel) return;
+        
         if(message == 'started'){
-            var stream = {
-                event: new events.EventEmitter()
-            };
-            streams[channel] = stream;
             broadcastEvent(sessionId, channel, message);
-        }else if(message == 'ended'){
-            streams[channel].event.emit('ended');
+        }else if(message == 'stopped'){
+            broadcastEvent(sessionId, channel, message);
         }else{
-            
-            streams[channel].event.emit('stream', message);
             var buf = new Uint8Array(message).buffer;
             var dv = new DataView(buf);
             broadcastEvent(sessionId, channel, message);
@@ -152,7 +95,9 @@ wss.on('connection', (ws, req) => {
 setInterval(() => {
     wss.clients.forEach(ws => {
         
-        if (!ws.isAlive) return ws.terminate();
+        if (!ws.isAlive){
+            return ws.terminate();
+        } 
         
         ws.isAlive = false;
         ws.ping(null, false, true);
@@ -186,16 +131,8 @@ function subscribe(user, channel){
     users[user] = channel;
     channels[channel].add(user);
 }
-
-              
+     
 var port = 8383;
 var hostname = '0.0.0.0';
 server.listen(port, hostname);
-
-/*
-server.listen(port, hostname, () => {
-    console.log(`Server running at ${hostname}:${port}`);
-});
-*/
-
-////////////////////////////////////////////////////////////
+console.log(`Server running at ${hostname}:${port}`);
