@@ -5,8 +5,8 @@ const uuid = require('uuid');
 var bodyParser = require('body-parser');
 var http = require('http');
 var websocketServer = require('ws');
-var fs = require('fs');
-var events = require('events');
+var cors = require('cors');
+var helmet = require('helmet');
 
 ////////////////////////////////////////////////////////////////////
 
@@ -27,6 +27,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(sessionParser);
+app.use(cors());
+app.use(helmet());
 
 const server = http.createServer(app);
 
