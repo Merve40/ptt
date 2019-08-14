@@ -75,15 +75,7 @@ wss.on('connection', (ws, req) => {
 
         if(!channel) return;
         
-        if(message == 'started'){
-            broadcastEvent(sessionId, channel, message);
-        }else if(message == 'stopped'){
-            broadcastEvent(sessionId, channel, message);
-        }else{
-            var buf = new Uint8Array(message).buffer;
-            var dv = new DataView(buf);
-            broadcastEvent(sessionId, channel, message);
-        }
+        broadcastEvent(sessionId, channel, message);
 
     });
 
@@ -106,10 +98,9 @@ setInterval(() => {
 
 function broadcastEvent(sender, channel, payload){
     var users = channels[channel];
-    console.log(users);
+   
     users.forEach(usr =>{
         if(usr != sender){
-            //console.log(usr);
             sockets[usr].send(payload);
         }
     });
