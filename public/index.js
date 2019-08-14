@@ -6,12 +6,13 @@ showMessage("Connecting to server..");
 ptt.connect().then((connection)=>{
     showMessage("Connection established!");
 
+    /**
+     * connects to channel 'test' for demonstration purposes
+     */
     connection.subscribe("test")
         .then(response=>{
             connection.bind(button);
-            /**
-             * connects to channel 'test' for demonstration purposes
-             */
+            
             showMessage("Subscribed to channel 'test'");
         }).catch(err=>{
             console.log(err);
