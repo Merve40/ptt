@@ -123,7 +123,7 @@ function subscribe(user, channel){
     channels[channel].add(user);
 }
      
-var port = 8383;
+var port = process.env.PORT || 8383;
 var hostname = '0.0.0.0';
 server.listen(port, hostname);
 console.log(`Server running at ${hostname}:${port}`);
