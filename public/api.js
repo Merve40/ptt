@@ -44,7 +44,7 @@ const ptt = (function() {
         connect : function(){
 
             const subscribe = (channel)=>{
-                return fetch('/subscribe?channel='+channel, {method: 'GET', credentials: 'same-origin'});
+                return fetch('/subscribe?channel='+channel, {method: 'GET'});
             };
 
             const bind = (button)=>{
@@ -61,7 +61,7 @@ const ptt = (function() {
             };
 
             return new Promise((resolve, reject) =>{
-                fetch('/login', { method: 'POST', credentials: 'same-origin' })
+                fetch('/login', { method: 'POST' })
                 .then((r)=>{
                     ws = new WebSocket(`ws://${location.host}/wss`);
                     ws.binaryType = 'arraybuffer';
