@@ -50,11 +50,11 @@ const ptt = (function() {
             const bind = (button)=>{
                 initRecorder().then(recorder =>{
                     
-                    button.onmousedown = ()=>{
+                    button.onpointerdown = ()=>{
                         recorder.start();
                     };
     
-                    button.onmouseup = ()=>{
+                    button.onpointerup = ()=>{
                         recorder.stop();
                     };
                 });
