@@ -7,7 +7,7 @@ Usage of this api can be found in <a href="public/index.js">index.js</a>
 ## Support
 Currently this is only supported on Web-browsers, that provide [AudioContext](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext#Browser_compatibility) 
 and [MediaRecorder](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder#Browser_compatibility).
-Recordings can also be played back on Android Browsers (Firefox & Chrome) and possibly also in WebView, but both android browsers seem to have problems with the microphone.
+Web-App was tested on Chrome & Firefox (Desktop & Android).
 
 ## Development
 
