@@ -16,11 +16,13 @@ ptt.connect().then((connection)=>{
             showMessage("Subscribed to channel 'test'");
         }).catch(err=>{
             //console.log(err);
+            console.error(err);
             showMessage("Could not subscribe!");
         });
     
 }).catch(err=>{
     //console.log(err);
+    console.error(err);
     showMessage("Connection failed!");
 });
 
