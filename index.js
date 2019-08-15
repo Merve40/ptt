@@ -7,9 +7,21 @@ var http = require('http');
 var websocketServer = require('ws');
 var cors = require('cors');
 var helmet = require('helmet');
+var fs = require('fs');
 
 ////////////////////////////////////////////////////////////////////
 
+
+var port = process.env.PORT || 8383;
+var hostname = '0.0.0.0';
+
+var cfg = {
+    ssl: true,
+    ssl_key: __dirname +'/ssl/server.key',
+    ssl_cert: __dirname+'/ssl/server.crt'
+};
+
+http = ( cfg.ssl ) ? require('https') : require('http');
 
 var channels = {};
 var users = {};
@@ -30,7 +42,17 @@ app.use(sessionParser);
 app.use(cors());
 app.use(helmet());
 
-const server = http.createServer(app);
+var server;
+
+if(cfg.ssl){
+    server = http.createServer({
+            cert: fs.readFileSync(cfg.ssl_cert, 'utf8'),
+            key: fs.readFileSync(cfg.ssl_key, 'utf8')
+        }, app);
+}else{
+    server = http.createServer(app);
+}
+
 
 const wss = new websocketServer.Server({
     verifyClient: function(info, done) {
@@ -125,7 +147,6 @@ function subscribe(user, channel){
     channels[channel].add(user);
 }
      
-var port = process.env.PORT || 8383;
-var hostname = '0.0.0.0';
+
 server.listen(port, hostname);
 console.log(`Server running at ${hostname}:${port}`);
