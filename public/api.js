@@ -68,6 +68,17 @@ const ptt = (function() {
             return new Promise((resolve, reject) =>{
                 fetch('/login', { method: 'POST' })
                 .then((r)=>{
+
+                    var reconnect = ()=>{
+                        var socket = new WebSocket(`wss://${location.host}/wss`);
+                        socket.binaryType = ws.binaryType;
+                        socket.onopen = ws.onopen;
+                        socket.onerror = ws.onerror;
+                        socket.onmessage = ws.onmessage;
+                        socket.onclose = ws.onclose;
+                        ws = socket;
+                    }
+
                     ws = new WebSocket(`wss://${location.host}/wss`);
                     ws.binaryType = 'arraybuffer';
 
@@ -81,6 +92,7 @@ const ptt = (function() {
 
                     ws.onclose = function(e){
                         console.log(e);
+                        reconnect();                        
                     }
                     
                     ws.onmessage = (e)=>{
@@ -110,6 +122,12 @@ const ptt = (function() {
                             }                            
                         }            
                     }
+
+                    setInterval(()=>{
+                        if(ws.readyState == 3 || ws.readyState == 2){
+                            reconnect();
+                        }
+                    }, 5000);
                 })
                 .catch(function(err) {
                     reject(err);
