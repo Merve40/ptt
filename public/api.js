@@ -33,11 +33,11 @@ const ptt = (function() {
                 };
         
                 var stop = () => {                  
-                    clearInterval(interval);            
+                    clearInterval(interval);
+                    mediaRecorder.stop();            
                     setTimeout(()=>{
-                        mediaRecorder.stop();
                         ws.send('stopped');
-                    }, 1500);
+                    }, 1800);
                 };
         
                 resolve({ start, stop });
