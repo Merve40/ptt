@@ -35,10 +35,9 @@ const ptt = (function() {
                 var stop = () => {                  
                     clearInterval(interval);
                     mediaRecorder.stop();   
-                    ws.send('stopped');     
-                    /*setTimeout(()=>{
+                    setTimeout(()=>{
                         ws.send('stopped');
-                    }, 1800);*/
+                    }, 1200);
                 };
         
                 resolve({ start, stop });
