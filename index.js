@@ -157,7 +157,7 @@ function subscribe(user, channel){
 
     var oldChannel = users[user];
 
-    if(oldChannel != channel){
+    if(user in users && oldChannel != channel){
         channels[oldChannel].delete(user);
     }
    
