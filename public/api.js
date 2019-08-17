@@ -111,7 +111,7 @@ const ptt = (function() {
                                 context: context,
                                 //channels: 2,
                                 //sampleRate: context.sampleRate,
-                                mode: Writable.BUFFER_MODE,
+                                mode: Writable.WORKER_MODE,
                                 autoend: true
                             });
 
