@@ -111,7 +111,8 @@ const ptt = (function() {
                                 context: context,
                                 //channels: 2,
                                 //sampleRate: context.sampleRate,
-                                //autoend: true
+                                mode: Writable.BUFFER_MODE,
+                                autoend: true
                             });
 
                         }else if(e.data == 'stopped'){
