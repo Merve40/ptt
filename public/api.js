@@ -63,7 +63,7 @@ const ptt = (function() {
             return new Promise((resolve, reject) =>{
                 fetch('/login', { method: 'POST' })
                 .then((r)=>{
-                    ws = new WebSocket(`wss://${location.host}/wss`);
+                    ws = new WebSocket(`ws://${location.host}/wss`);
                     ws.binaryType = 'arraybuffer';
 
                     ws.onopen = function(){
@@ -75,7 +75,9 @@ const ptt = (function() {
                     };
                     
                     ws.onmessage = (e)=>{
-                        if(e.data == 'started'){
+                        if(e.data == 'ping'){
+                            ws.send('pong');
+                        }else if(e.data == 'started'){
                             context = new (window.AudioContext || window.webkitAudioContext)();
                         
                             writable = Writable(context.destination, {

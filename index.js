@@ -64,7 +64,7 @@ const wss = new websocketServer.Server({
     server
   });
 
-app.get('/bundle.js', browserify(['web-audio-stream/writable', 'audio-context']));
+app.get('/bundle.js', browserify(['web-audio-stream/writable', 'ws']));
 
 app.post('/login', function(req, res) {
     const id = uuid.v4();
@@ -89,36 +89,48 @@ app.get('/subscribe', (req, res)=>{
 wss.on('connection', (ws, req) => {
 
     ws.isAlive = true;
-    sockets[req.session.userId] = ws;
+    ws.id = req.session.userId;
+    sockets[ws.id] = ws;
 
     ws.on('message', message => {
 
-        var sessionId = req.session.userId;
-        console.log("message from: "+ sessionId);
-        var channel = users[sessionId];
+        var channel = users[ws.id];
 
         if(!channel) return;
-        
-        broadcastEvent(sessionId, channel, message);
 
+        if(message == 'pong'){
+            ws.isAlive = true;
+        }else{
+            console.log("message from: "+ ws.id);
+            broadcastEvent(ws.id, channel, message);
+        }
+    
     });
 
-    ws.on('pong', () => {
-        ws.isAlive = true;
+    ws.on('close', (code, reason)=>{
+        console.log(`lost connection to client=${ws.id}; code=${code}`);
+        terminateConnection(ws);
     });
 });
 
 setInterval(() => {
     wss.clients.forEach(ws => {
-        
+       
         if (!ws.isAlive){
-            return ws.terminate();
+            return terminateConnection(ws);
         } 
-        
         ws.isAlive = false;
-        ws.ping(null, false, true);
+        ws.send('ping');
     });
 }, 10000);
+
+function terminateConnection(socket){
+    delete sockets[socket.id];
+    channels[users[socket.id]].delete(socket.id);
+    delete users[socket.id];
+
+    return socket.terminate();
+}
 
 function broadcastEvent(sender, channel, payload){
     var users = channels[channel];
