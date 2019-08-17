@@ -99,8 +99,10 @@ const ptt = (function() {
                         if(e.data == 'ping'){
                             ws.send('pong');
                         }else if(e.data == 'started'){
-                            if (context && context.state == 'running'){
-                                context.close();
+                            if (context){
+                                if(context.state == 'running'){
+                                    context.close();
+                                }
                             }
 
                             context = new (window.AudioContext || window.webkitAudioContext)();
