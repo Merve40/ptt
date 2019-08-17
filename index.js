@@ -64,7 +64,7 @@ const wss = new websocketServer.Server({
     server
   });
 
-app.get('/bundle.js', browserify(['web-audio-stream/writable', 'ws']));
+app.get('/bundle.js', browserify(['web-audio-stream/writable']));
 
 app.post('/login', function(req, res) {
     const id = uuid.v4();
@@ -126,9 +126,15 @@ setInterval(() => {
 
 function terminateConnection(socket){
     delete sockets[socket.id];
-    channels[users[socket.id]].delete(socket.id);
-    delete users[socket.id];
+    
+    if(channels[users[socket.id]]){
+        channels[users[socket.id]].delete(socket.id);
+    }
 
+    if(socket.id in users){
+        delete users[socket.id];
+    }
+    
     return socket.terminate();
 }
 
@@ -151,7 +157,7 @@ function subscribe(user, channel){
 
     var oldChannel = users[user];
 
-    if(user in users && oldChannel != channel){
+    if(oldChannel != channel){
         channels[oldChannel].delete(user);
     }
    

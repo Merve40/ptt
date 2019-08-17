@@ -20,6 +20,11 @@ const ptt = (function() {
 
                 var start = () => {
                     ws.send('started');
+                    
+                    if(mediaRecorder.state == 'recording'){
+                        mediaRecorder.stop();
+                    }
+
                     mediaRecorder.start();
                     interval = setInterval( () => {
                         mediaRecorder.stop();
@@ -73,26 +78,36 @@ const ptt = (function() {
                     ws.onerror = function(e) {
                         reject(e);
                     };
+
+                    ws.onclose = function(e){
+                        console.log(e);
+                    }
                     
                     ws.onmessage = (e)=>{
                         if(e.data == 'ping'){
                             ws.send('pong');
                         }else if(e.data == 'started'){
+                            if (context && context.state == 'running'){
+                                context.close();
+                            }
+
                             context = new (window.AudioContext || window.webkitAudioContext)();
                         
                             writable = Writable(context.destination, {
                                 context: context,
-                                channels: 2,
-                                sampleRate: context.sampleRate,
-                                autoend: true
+                                //channels: 2,
+                                //sampleRate: context.sampleRate,
+                                //autoend: true
                             });
 
                         }else if(e.data == 'stopped'){
                             context.close();
                         }else{
-                            context.decodeAudioData(e.data, (buffer)=>{
-                                writable.write(buffer); 
-                            });
+                            if (context.state == 'running'){
+                                context.decodeAudioData(e.data, (buffer)=>{
+                                    writable.write(buffer); 
+                                });
+                            }                            
                         }            
                     }
                 })
