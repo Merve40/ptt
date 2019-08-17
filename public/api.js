@@ -34,10 +34,10 @@ const ptt = (function() {
         
                 var stop = () => {                  
                     clearInterval(interval);            
-                    mediaRecorder.stop();
                     setTimeout(()=>{
+                        mediaRecorder.stop();
                         ws.send('stopped');
-                    }, 1200);
+                    }, 500);
                 };
         
                 resolve({ start, stop });
@@ -60,6 +60,7 @@ const ptt = (function() {
                     };
     
                     button.onpointerup = ()=>{
+
                         recorder.stop();
                     };
                 });
