@@ -71,7 +71,7 @@ const ptt = (function() {
                 .then((r)=>{
 
                     var reconnect = ()=>{
-                        var socket = new WebSocket(`ws://${location.host}/wss`);
+                        var socket = new WebSocket(`wss://${location.host}/wss`);
                         socket.binaryType = ws.binaryType;
                         socket.onopen = ws.onopen;
                         socket.onerror = ws.onerror;
@@ -80,7 +80,7 @@ const ptt = (function() {
                         ws = socket;
                     }
 
-                    ws = new WebSocket(`ws://${location.host}/wss`);
+                    ws = new WebSocket(`wss://${location.host}/wss`);
                     ws.binaryType = 'arraybuffer';
 
                     ws.onopen = function(){
