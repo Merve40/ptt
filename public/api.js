@@ -94,8 +94,14 @@ const ptt = (function() {
                     };
 
                     ws.onclose = function(e){
-                        console.log(e);
-                        reconnect();                        
+                        if(e.code == 1011){
+                            var msg = `Could not connect to websocket. reason=${e.reason}`;
+                            console.log(msg);
+                            reject({error: msg});
+                        }else{
+                            console.log(e);
+                            reconnect();
+                        }                
                     }
                     
                     ws.onmessage = (e)=>{

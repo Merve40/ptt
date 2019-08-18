@@ -68,6 +68,9 @@ app.get('/bundle.js', browserify(['web-audio-stream/writable']));
 
 app.post('/login', function(req, res) {
     const id = uuid.v4();
+    while(id == undefined){ // sometimes id is undefined for some reason
+        id = uuid.v4();
+    }
     req.session.userId = id;
     res.send({ result: 'OK', message: 'Session updated' });
 });
@@ -82,14 +85,25 @@ app.get('/subscribe', (req, res)=>{
     var channel = req.query.channel;
     var id = req.session.userId;
     
-    subscribe(id, channel);
-    res.send('OK');
+    if(id){
+        subscribe(id, channel);
+        res.send('OK');
+    }else{
+        res.status(404).send("User does not have an id!");
+    }    
 });
      
 wss.on('connection', (ws, req) => {
 
     ws.isAlive = true;
     ws.id = req.session.userId;
+
+    console.log(`on connection.. id=${ws.id}`);
+
+    if(ws.id == undefined){
+        ws.close(1011, "User is not assigned an id.");
+    }
+
     sockets[ws.id] = ws;
 
     ws.on('message', message => {
@@ -108,15 +122,20 @@ wss.on('connection', (ws, req) => {
     });
 
     ws.on('close', (code, reason)=>{
-        console.log(`lost connection to client=${ws.id}; code=${code}`);
-        terminateConnection(ws);
+        if(code == 1011){
+            console.log(`${code}: rejecting user connecting. reason=${reason}`);
+        }else{
+            console.log(`lost connection to client=${ws.id}; code=${code}`);
+            terminateConnection(ws);
+        }
+        
     });
 });
 
 setInterval(() => {
     wss.clients.forEach(ws => {
        
-        if (!ws.isAlive){
+        if (!ws.isAlive && ws.id){
             return terminateConnection(ws);
         } 
         ws.isAlive = false;
