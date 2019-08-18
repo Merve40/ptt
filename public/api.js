@@ -5,6 +5,7 @@ const ptt = (function() {
     var writable;
     var context;
     var ws;
+    var button;
   
     const initRecorder = () => {
         return new Promise(resolve => {
@@ -52,7 +53,8 @@ const ptt = (function() {
                 return fetch('/subscribe?channel='+channel, {method: 'GET'});
             };
 
-            const bind = (button)=>{
+            const bind = (btn)=>{
+                button = btn;
                 initRecorder().then(recorder =>{
                     
                     button.onpointerdown = ()=>{
@@ -100,6 +102,11 @@ const ptt = (function() {
                         if(e.data == 'ping'){
                             ws.send('pong');
                         }else if(e.data == 'started'){
+
+                            if(button){
+                                button.disabled = true;
+                            }
+
                             if (context){
                                 if(context.state == 'running'){
                                     context.close();
@@ -117,6 +124,11 @@ const ptt = (function() {
 
                         }else if(e.data == 'stopped'){
                             context.close();
+
+                            if(button){
+                                button.disabled = false;
+                            }
+
                         }else{
                             if (context.state == 'running'){
                                 context.decodeAudioData(e.data, (buffer)=>{
