@@ -21,3 +21,6 @@ In order to test outside of the network check out [localtunnel](https://localtun
 
 ## Demo
 https://ptt-demo.herokuapp.com
+
+## Android Integration
+see [PTT for Android](https://github.com/merve40/ptt-android) 
