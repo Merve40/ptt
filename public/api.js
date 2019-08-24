@@ -6,6 +6,7 @@ const ptt = (function() {
     var context;
     var ws;
     var button;
+    var id;
   
     const initRecorder = () => {
         return new Promise(resolve => {
@@ -54,7 +55,7 @@ const ptt = (function() {
         connect : function(){
 
             const subscribe = (channel)=>{
-                return fetch('/subscribe?channel='+channel, {method: 'GET'});
+                return fetch(`/subscribe?channel=${channel}&id=${id}`, {method: 'GET'});
             };
 
             const bind = (btn)=>{
@@ -66,18 +67,18 @@ const ptt = (function() {
                     };
     
                     button.onpointerup = ()=>{
-
                         recorder.stop();
                     };
                 });
             };
 
             return new Promise((resolve, reject) =>{
-                fetch('/login', { method: 'POST' })
-                .then((r)=>{
-
+                fetch('/login', { method: 'GET' })
+                .then((r)=>r.json()).then(data=>{
+                    id = data.id;
+                
                     var reconnect = ()=>{
-                        var socket = new WebSocket(`wss://${location.host}/wss`);
+                        var socket = new WebSocket(`wss://${location.host}/wss?id=${id}`);
                         socket.binaryType = ws.binaryType;
                         socket.onopen = ws.onopen;
                         socket.onerror = ws.onerror;
@@ -86,7 +87,7 @@ const ptt = (function() {
                         ws = socket;
                     }
 
-                    ws = new WebSocket(`wss://${location.host}/wss`);
+                    ws = new WebSocket(`wss://${location.host}/wss?id=${id}`);
                     ws.binaryType = 'arraybuffer';
 
                     ws.onopen = function(){
@@ -98,7 +99,7 @@ const ptt = (function() {
                     };
 
                     ws.onclose = function(e){
-                        if(e.code == 1011){
+                        if(e.code == 1011 || e.code == 1006){
                             var msg = `Could not connect to websocket. reason=${e.reason}`;
                             console.log(msg);
                             reject({error: msg});
@@ -148,11 +149,13 @@ const ptt = (function() {
                         }            
                     }
 
+                    /*
                     setInterval(()=>{
                         if(ws.readyState == 3 || ws.readyState == 2){
                             reconnect();
                         }
                     }, 5000);
+                    */
                 })
                 .catch(function(err) {
                     reject(err);

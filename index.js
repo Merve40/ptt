@@ -38,7 +38,7 @@ var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
-app.use(sessionParser);
+//app.use(sessionParser);
 app.use(cors());
 app.use(helmet());
 
@@ -54,18 +54,28 @@ if(cfg.ssl){
 }
 
 
+/*
 const wss = new websocketServer.Server({
     verifyClient: function(info, done) {
         sessionParser(info.req, {}, () => {
             done(info.req.session.userId);
-      });
+        });
     },
     path: '/wss',
     server
   });
+*/
+
+const wss = new websocketServer.Server({
+    path: '/wss',
+    server
+  });
+
 
 app.get('/bundle.js', browserify(['web-audio-stream/writable']));
 
+
+/*
 app.post('/login', function(req, res) {
     const id = uuid.v4();
     while(id == undefined){ // sometimes id is undefined for some reason
@@ -74,7 +84,18 @@ app.post('/login', function(req, res) {
     req.session.userId = id;
     res.send({ result: 'OK', message: 'Session updated' });
 });
-  
+*/
+
+app.get('/login', function(req, res) {
+    const id = uuid.v4();
+    while(id == undefined){ // sometimes id is undefined for some reason
+        id = uuid.v4();
+    }
+    
+    res.send({ result: 'OK', message: 'Session updated', id });
+});
+
+
 app.delete('/logout', function(request, response) {
     request.session.destroy(function() {
         response.send({ result: 'OK', message: 'Session destroyed' });
@@ -83,7 +104,8 @@ app.delete('/logout', function(request, response) {
 
 app.get('/subscribe', (req, res)=>{
     var channel = req.query.channel;
-    var id = req.session.userId;
+    var id = req.query.id;
+    //var id = req.session.userId;
     
     if(id){
         subscribe(id, channel);
@@ -96,7 +118,9 @@ app.get('/subscribe', (req, res)=>{
 wss.on('connection', (ws, req) => {
 
     ws.isAlive = true;
-    ws.id = req.session.userId;
+    //ws.id = req.session.userId;
+    var id = req.url.split('=')[1]
+    ws.id = id;
 
     console.log(`on connection.. id=${ws.id}`);
 
