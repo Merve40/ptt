@@ -24,3 +24,6 @@ https://ptt-demo.herokuapp.com
 
 ## Android Integration
 see [PTT for Android](https://github.com/merve40/ptt-android) 
+
+## iOS Integration (in development)
+see [PTT for iOS](https://github.com/merve40/ptt-ios)
