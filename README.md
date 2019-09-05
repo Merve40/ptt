@@ -1,4 +1,4 @@
-# Push-to-Talk 
+# Push-to-Talk (in development)
 
 This is a simple push-to-talk implementation based on Websockets.     
 It can be used to broadcast voice-messages in real-time to multiple users, that are subscribed to the same channel.      
@@ -22,7 +22,7 @@ In order to test outside of the network check out [localtunnel](https://localtun
 ## Demo
 https://ptt-demo.herokuapp.com
 
-## Android Integration
+## Android Integration (in development)
 see [PTT for Android](https://github.com/merve40/ptt-android) 
 
 ## iOS Integration (in development)
