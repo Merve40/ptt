@@ -2,20 +2,52 @@ var Writable = require('web-audio-stream/writable');
 
 const ptt = (function() {
 
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    var context = new AudioContext();
+
+    var sampleDuration = 1000;
     var writable;
-    var context;
     var ws;
     var button;
     var id;
+    var startedRecording = false;
+
+    var streamer;
   
     const initRecorder = () => {
         return new Promise(resolve => {
-            navigator.mediaDevices.getUserMedia({ audio: true })
+            navigator.mediaDevices.getUserMedia({ 
+                audio: {
+                    sampleRate: 44100,
+                    channelCount: 2
+                }
+            })
             .then(stream => {
                 const mediaRecorder = new MediaRecorder(stream);
                
                 mediaRecorder.addEventListener("dataavailable", event => {
-                    ws.send(event.data);
+                    console.log(event.data);
+                    new Response(event.data).arrayBuffer().then(buffer =>{
+
+                        // firefox does not support PCM out of the box -> needs to decode audio-data into PCM
+                        context.decodeAudioData(buffer, b =>{
+                            console.log(b);
+                            if(startedRecording){ // sends meta-data first
+                                var meta = {
+                                    encoding: 32,
+                                    sampleRate: b.sampleRate,
+                                    channels: b.numberOfChannels,
+                                    bufferSize: b.sampleRate * b.numberOfChannels // approximation based on sampleDuration
+                                }
+                                console.log(meta);
+                                ws.send(JSON.stringify({meta}))
+                                startedRecording=false;
+                                return
+                            }
+                            var data = b.getChannelData(0).buffer;
+                            ws.send(data);
+                        })
+                    });                    
                 });
 
                 var interval;
@@ -28,10 +60,14 @@ const ptt = (function() {
                     }
 
                     mediaRecorder.start();
+                    startedRecording = true;
+                    
                     interval = setInterval( () => {
+                        //mediaRecorder.requestData();
                         mediaRecorder.stop();
                         mediaRecorder.start();
-                    }, 1000);            
+                    }, sampleDuration);
+                                
                 };
         
                 var stop = () => {                  
@@ -108,8 +144,15 @@ const ptt = (function() {
                             reconnect();
                         }                
                     }
-                    
+                  
+                    var audioConfig;
+
                     ws.onmessage = (e)=>{
+                        var data;
+                        try{
+                            data = JSON.parse(e.data);
+                        }catch(e){}
+
                         if(e.data == 'ping'){
                             ws.send('pong');
                         }else if(e.data == 'started'){
@@ -124,28 +167,49 @@ const ptt = (function() {
                                 }
                             }
 
-                            context = new (window.AudioContext || window.webkitAudioContext)();
-                        
-                            writable = Writable(context.destination, {
-                                context: context,
-                                //channels: 2,
-                                //sampleRate: context.sampleRate,
-                                autoend: true
-                            });
-
                         }else if(e.data == 'stopped'){
-                            context.close();
-
+                            
                             if(button){
                                 button.disabled = false;
                             }
 
-                        }else{
-                            if (context.state == 'running'){
-                                context.decodeAudioData(e.data, (buffer)=>{
-                                    writable.write(buffer); 
-                                });
-                            }                            
+                            context.close();
+
+                        }else if(data){
+                            console.log("receiving..");
+                            audioConfig = data.meta;
+                            streamer = new Streamer(audioConfig);
+                            /*
+                            context = new AudioContext();
+                            writable = Writable(context.destination, {
+                                context: context,
+                                autoend: true
+                            });
+                            */
+                        } else{
+
+                            streamer.play(e.data);
+
+                            /*
+                            var blob = new Blob([wavBuffer]);
+                            var audio = new Audio();
+                            var u = URL.createObjectURL(blob);
+                            console.log(u);
+                            audio.src = u;
+                            audio.play();
+                            
+
+                           var opts = {
+                                numChannels: audioConfig.channels, 
+                                sampleRate: audioConfig.sampleRate,
+                                bytesPerSample: audioConfig.encoding / 8
+                            };
+
+                            var wavBuffer = toWav(opts, e.data);
+                            context.decodeAudioData(wavBuffer, audioBuffer =>{
+                                writable.write(audioBuffer);
+                            });
+                            */
                         }            
                     }
 
