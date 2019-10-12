@@ -178,17 +178,17 @@ const ptt = (function() {
                         }else if(data){
                             console.log("receiving..");
                             audioConfig = data.meta;
-                            streamer = new Streamer(audioConfig);
-                            /*
+                            //streamer = new Streamer(audioConfig);
+                            
                             context = new AudioContext();
                             writable = Writable(context.destination, {
                                 context: context,
                                 autoend: true
                             });
-                            */
+                            
                         } else{
 
-                            streamer.play(e.data);
+                            //streamer.play(e.data);
 
                             /*
                             var blob = new Blob([wavBuffer]);
@@ -197,7 +197,7 @@ const ptt = (function() {
                             console.log(u);
                             audio.src = u;
                             audio.play();
-                            
+                            */
 
                            var opts = {
                                 numChannels: audioConfig.channels, 
@@ -209,7 +209,7 @@ const ptt = (function() {
                             context.decodeAudioData(wavBuffer, audioBuffer =>{
                                 writable.write(audioBuffer);
                             });
-                            */
+                            
                         }            
                     }
 
