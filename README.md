@@ -1,4 +1,4 @@
-# Push-to-Talk (in development)
+# Push-to-Talk 
 
 This is a simple push-to-talk implementation based on Websockets. It includes both the server and client implementation.          
 It can be used to broadcast voice-messages in real-time to multiple users, that are subscribed to the same channel.      
