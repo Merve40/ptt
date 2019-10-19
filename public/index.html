@@ -2,22 +2,30 @@
 <html lang="en">
   <head>
       <meta charset="utf-8">
-      <title>PTT Demo</title>
+      <title>Push-To-Talk Demo</title>
   </head>
 
   <body>
     <div style="text-align:center;">
       <h1 style="font-size:35px;" >PTT Demo</h1>
       <pre style="font-size:15px;" id="message"></pre>
-      <input style="height:100px; width:200px;" id="btn-record" type="button" value="PUSH TO TALK!"></input>
+      <br/>
+      <pre style="font-size:15px;" id="info-subscribe"></pre>
+      <input style="height:100px; width:200px;" id="btn-record" type="button" value="PUSH TO TALK!"></input> 
+      <br/>
+      <br/>
+      <input id="input-channel" style="width:200px;" type="text" placeholder="channel">
+      <br/>
+      <br/>
+      <input style="height:50px; width:200px;" id="btn-subscribe" type="button" value="SUBSCRIBE"></input> 
     </div>
     
 
 
     <script src="bundle.js"></script>
-    <script src="wave.js"></script>
-    <script src="streamer.js"></script>
-    <script src="api.js"></script>
+    <script src="websocket.js"></script>
+    <script src="audiostream.js"></script>
+    <script src="ptt.js"></script>
     <script src="index.js"></script>
   </body>
 </html>
