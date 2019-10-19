@@ -2,7 +2,6 @@
 
 This is a simple push-to-talk implementation based on Websockets. It includes both the server and client implementation.          
 It can be used to broadcast voice-messages in real-time to multiple users, that are subscribed to the same channel.      
-Usage of this api can be found in <a href="public/index.js">index.js</a>
 
 ## Support
 Client implementation is only supported on Web-browsers, that provide [AudioContext](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext#Browser_compatibility) 
@@ -23,10 +22,42 @@ $ npm install
 $ npm start
 ```
 
-
 ## Testing
 As of recently (Oct 2019), Firefox and Chrome prohibited the access to the microphone without **https** connection. 
 In order to test full functionality use [localtunnel](https://localtunnel.github.io/www/).
+
+## Usage
+Usage of this api can be found in <a href="public/index.js">index.js</a>     
+
+```javascript
+var myPttButton = document.querySelector('#btn-record');
+var subscribeButton = document.querySelector("#btn-subscribe");
+var channelInput = document.querySelector("#input-channel");
+var channel;
+
+ptt.connect().then((connection)=>{
+    connection.bind(myPttButton);
+
+    function handleSubscribeSuccess(response){        
+       console.log(`Subscribed to channel '${channel}'`);
+    }
+
+    function handleError(){
+        console.log("Could not subscribe!");
+    }
+
+    subscribeButton.onclick = (e)=>{
+        if(channelInput.value.trim().length > 0){
+            channel = channelInput.value.trim();
+            connection.subscribe(channel).then(handleSubscribeSuccess).catch(handleError);
+            channelInput.value = "";
+        }
+    };
+    
+}).catch(err=>{
+    console.log("Connection failed!");
+});
+```
 
 ## Demo
 https://ptt-demo.herokuapp.com
