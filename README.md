@@ -5,7 +5,7 @@ It can be used to broadcast voice-messages in real-time to multiple users, that 
 Usage of this api can be found in <a href="public/index.js">index.js</a>
 
 ## Support
-Currently this is only supported on Web-browsers, that provide [AudioContext](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext#Browser_compatibility) 
+Client implementation is only supported on Web-browsers, that provide [AudioContext](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext#Browser_compatibility) 
 and [MediaRecorder](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder#Browser_compatibility).
 Web-App was tested on Chrome & Firefox (for Desktop & Android).
 * does not work in any ios browsers
