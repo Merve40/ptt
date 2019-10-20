@@ -62,7 +62,7 @@ ptt.connect().then((connection)=>{
 ## Demo
 https://ptt-demo.herokuapp.com
 
-## Android Integration (in development)
+## Android Integration 
 see [PTT for Android](https://github.com/merve40/ptt-android) 
 
 ## iOS Integration (in development)
