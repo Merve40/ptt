@@ -10,7 +10,7 @@ function Websocket(url, binaryType="blob"){
     this.socketEvents = ['open', 'close', 'error', 'message'];
     
     this.socket = new WebSocket(url);
-    this.socket.binaryType = this.binaryType;
+    this.socket.binaryType = binaryType;
     
     var self = this;
 
