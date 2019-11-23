@@ -238,7 +238,9 @@ AudioStream.prototype.getNewPlayer = function(metadata){
     }
 
     function stop(){
-        context.close();
+        if( context && context.state === 'running'){
+            context.close();
+        }
     }
 
     return{
