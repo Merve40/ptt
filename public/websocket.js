@@ -23,7 +23,7 @@ function Websocket(url, binaryType="blob"){
                 socket.addEventListener(e, cb);
             }
         }
-        this.socket.addEventListener('close', closeEvent);
+        socket.addEventListener('close', closeEvent);
         this.socket = socket;
         this.dispatchEvent('reconnect', this.socket);
     }
