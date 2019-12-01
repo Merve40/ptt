@@ -8,9 +8,11 @@ var websocketServer = require('ws');
 var cors = require('cors');
 var helmet = require('helmet');
 var fs = require('fs');
+const ipfilter = require('express-ipfilter').IpFilter;
 
 ////////////////////////////////////////////////////////////////////
 
+var blacklisted = ['49.89.0.0/16'];
 
 var port = process.env.PORT || 8383;
 var hostname = '0.0.0.0';
@@ -41,6 +43,7 @@ app.use(express.static('public'));
 //app.use(sessionParser);
 app.use(cors());
 app.use(helmet());
+app.use(ipfilter(blacklisted));
 
 var server;
 
