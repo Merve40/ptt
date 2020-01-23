@@ -12,7 +12,7 @@ const ipfilter = require('express-ipfilter').IpFilter;
 
 ////////////////////////////////////////////////////////////////////
 
-var blacklisted = ['49.89.0.0/16'];
+var blacklisted = ['49.89.0.0/16', '46.119.174.102'];
 
 var port = process.env.PORT || 8383;
 var hostname = '0.0.0.0';
@@ -29,18 +29,11 @@ var channels = {};
 var users = {};
 var sockets = {};
 
-const sessionParser = session({
-    saveUninitialized: false,
-    secret: '$eCuRiTy',
-    resave: false
-  });
-
 var app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
-//app.use(sessionParser);
 app.use(cors());
 app.use(helmet());
 app.use(ipfilter(blacklisted));
@@ -56,38 +49,12 @@ if(cfg.ssl){
     server = http.createServer(app);
 }
 
-
-/*
-const wss = new websocketServer.Server({
-    verifyClient: function(info, done) {
-        sessionParser(info.req, {}, () => {
-            done(info.req.session.userId);
-        });
-    },
-    path: '/wss',
-    server
-  });
-*/
-
 const wss = new websocketServer.Server({
     path: '/wss',
     server
-  });
-
+});
 
 app.get('/bundle.js', browserify(['web-audio-stream/writable']));
-
-
-/*
-app.post('/login', function(req, res) {
-    const id = uuid.v4();
-    while(id == undefined){ // sometimes id is undefined for some reason
-        id = uuid.v4();
-    }
-    req.session.userId = id;
-    res.send({ result: 'OK', message: 'Session updated' });
-});
-*/
 
 app.get('/login', function(req, res) {
     const id = uuid.v4();
@@ -108,7 +75,6 @@ app.delete('/logout', function(request, response) {
 app.get('/subscribe', (req, res)=>{
     var channel = req.query.channel;
     var id = req.query.id;
-    //var id = req.session.userId;
     
     if(id){
         subscribe(id, channel);
@@ -121,11 +87,8 @@ app.get('/subscribe', (req, res)=>{
 wss.on('connection', (ws, req) => {
 
     ws.isAlive = true;
-    //ws.id = req.session.userId;
     var id = req.url.split('=')[1]
     ws.id = id;
-
-    console.log(`on connection.. id=${ws.id}`);
 
     if(ws.id == undefined){
         ws.close(1011, "User is not assigned an id.");
@@ -142,20 +105,23 @@ wss.on('connection', (ws, req) => {
         if(message == 'pong'){
             ws.isAlive = true;
         }else{
-            console.log("message from: "+ ws.id);
+            try{
+                var o = JSON.parse(message);
+                if('meta' in o){
+                    console.log(`message from= ${ws.id}\tchannel= ${channel}`);
+                }
+            }catch(e){}
+
             broadcastEvent(ws.id, channel, message);
         }
-    
     });
 
     ws.on('close', (code, reason)=>{
         if(code == 1011){
-            console.log(`${code}: rejecting user connecting. reason=${reason}`);
+            console.log(`${code}: rejecting user connection. reason=${reason}`);
         }else{
-            console.log(`lost connection to client=${ws.id}; code=${code}`);
             terminateConnection(ws);
-        }
-        
+        }       
     });
 });
 

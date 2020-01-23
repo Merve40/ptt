@@ -31,6 +31,11 @@ function Websocket(url, binaryType="blob"){
     function closeEvent (e){
         if(e.code == 1011){
             console.log(`Could not connect to websocket. reason=${e.reason}`);
+        }else if(e.code == 1006){
+            console.log(`Connection to server was terminated. It might be caused by the firewall, or an intermediate proxy / server.`);
+            if(e.reason){
+                console.log(e.reason);
+            }
         }else{
             reconnect(self.url);
         }
