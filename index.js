@@ -12,7 +12,7 @@ const ipfilter = require('express-ipfilter').IpFilter;
 
 ////////////////////////////////////////////////////////////////////
 
-var blacklisted = ['49.89.0.0/16', '46.119.174.102', '185.136.159.215'];
+var blacklisted = ['49.89.0.0/16', '46.119.174.102', '185.136.159.215', '3.16.81.199'];
 
 var port = process.env.PORT || 8383;
 var hostname = '0.0.0.0';
