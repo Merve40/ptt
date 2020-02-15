@@ -36,7 +36,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(cors());
 app.use(helmet());
+
 app.use(ipfilter(blacklisted));
+
+app.use(function(req, res, next) {
+    if (blacklisted.indexOf(req.ip) > -1){    
+        res.status(403).end('forbidden');
+    }else{
+        next();
+    }
+});
+
 
 var server;
 
