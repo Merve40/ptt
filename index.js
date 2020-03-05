@@ -155,7 +155,9 @@ function broadcastEvent(sender, channel, payload){
    
     users.forEach(usr =>{
         if(usr != sender){
-            sockets[usr].send(payload);
+            if(sockets[usr]){
+                sockets[usr].send(payload);
+            }
         }
     });
 }
