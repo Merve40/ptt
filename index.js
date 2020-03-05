@@ -12,7 +12,7 @@ const ipfilter = require('express-ipfilter').IpFilter;
 
 ////////////////////////////////////////////////////////////////////
 
-var blacklisted = ['49.89.0.0/16', '46.119.174.102'];
+var blacklisted = ['49.89.0.0/16', '46.119.174.102', '185.136.159.215', '3.16.81.199', '51.79.28.114'];
 
 var port = process.env.PORT || 8383;
 var hostname = '0.0.0.0';
@@ -37,6 +37,14 @@ app.use(express.static('public'));
 app.use(cors());
 app.use(helmet());
 app.use(ipfilter(blacklisted));
+
+app.use(function(req, res, next) {
+    if (blacklisted.indexOf(req.ip) > -1){    
+        res.status(403).end('You have been blacklisted!');
+    }else{
+        next();
+    }
+});
 
 var server;
 
