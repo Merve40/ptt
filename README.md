@@ -62,6 +62,16 @@ ptt.connect().then((connection)=>{
 ## Demo
 https://ptt-demo.herokuapp.com
 
+## Docker
+
+```
+docker run --rm -d -p 8383:8383 kchaitanya863/ptt
+```
+```
+-v /home/ubuntu/temp/server.key:/usr/src/app/ssl/server.key 
+-v /home/ubuntu/temp/server.crt:/usr/src/app/ssl/server.crt
+```
+
 ## Android Integration 
 see [PTT for Android](https://github.com/merve40/ptt-android) 
 
